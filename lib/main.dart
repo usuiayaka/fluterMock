@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/HomePage.dart';
 import 'package:flutter_application_1/mainPageWidget.dart';
+import 'package:flutter_application_1/appPage1.dart';
 
 void main() {
   runApp(const MyApp());
@@ -36,7 +37,9 @@ class MyApp extends StatelessWidget {
       //画面遷移練習の場合
       // home: HomePage(),
       //ListViewの場合
-      home: MainPageWidget(),
+      // home: MainPageWidget(),
+      //期末テスト用ページへの遷移の場合、
+      home: appPage1(),
     );
   }
 }

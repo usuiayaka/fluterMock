@@ -1,1 +1,7 @@
 仕様書です。
+
+<期末課題>
+'main.dart' で起動後 'appPage1.dart' が開かれます。
+'appPage1.dart' のボタンを押すことで 'appPage2.dart' が開かれます。
+'appPage2.dart' のボタンを押すことで 'appPage1.dart' に戻れます。
+本当は、二つの画面で違う画像を表示させたかったんですがうまくいかなかったです。
