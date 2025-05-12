@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Secondpage.dart';
+import 'package:flutter_application_1/HomePage.dart';
 
 class FirstPage extends StatelessWidget {
   @override
@@ -15,7 +15,7 @@ class FirstPage extends StatelessWidget {
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => SecondPage(),
+                      builder: (context) => HomePage(),
                     ));
               }),
         ));
