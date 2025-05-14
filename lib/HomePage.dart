@@ -103,7 +103,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               Text("Discover your best flavor.",
                   style: TextStyle(
-                      color: Colors.grey,
+                      color: Colors.black,
                       fontSize: 20,
                       fontWeight: FontWeight.w500)),
               Text(
