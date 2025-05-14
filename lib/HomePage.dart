@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/components/BottomNavigationBar.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -8,6 +9,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final ScrollController _scrollController = ScrollController();
   int selectedIndex = 0;
+  int currentPageIndex = 0;
 
   final List<Map<String, String>> items = [
     {
@@ -24,6 +26,12 @@ class _HomePageState extends State<HomePage> {
     },
   ];
 
+  final List<String> Navtext = [
+    "Your\nCollection",
+    "Recommended\nHerbTea",
+    "Browse by\nWorries"
+  ];
+
   void selectCategory(int index) {
     setState(() {
       selectedIndex = index;
@@ -36,8 +44,22 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void onBottomNavTapped(int index) {
+    setState(() {
+      currentPageIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      body: buildHomePageContent(),
+      bottomNavigationBar: CustomBottomNavigationBar(
+          currentIndex: currentPageIndex, onTap: onBottomNavTapped),
+    );
+  }
+
+  Widget buildHomePageContent() {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 80,
@@ -73,81 +95,84 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      body: Padding(
-        padding: EdgeInsets.only(left: 15, top: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Discover your best flavor.",
-                style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500)),
-            Text(
-                "How are you feeling today?\nAre you experiencing any discomfort or health concerns?",
-                style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500)),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.only(left: 15, top: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Discover your best flavor.",
+                  style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500)),
+              Text(
+                  "How are you feeling today?\nAre you experiencing any discomfort or health concerns?",
+                  style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500)),
 
-            SizedBox(height: 15),
+              SizedBox(height: 15),
 
-            // **カテゴリー選択部分**
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: List.generate(
-                  items.length,
-                  (index) => GestureDetector(
-                    onTap: () => selectCategory(index),
-                    child: Padding(
-                      padding: EdgeInsets.only(top: 10, right: 10),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            items[index]["text"]!.split("\n")[0],
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: selectedIndex == index
-                                  ? Colors.blueAccent
-                                  : Colors.black,
+              // **カテゴリー選択部分**
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: List.generate(
+                    items.length,
+                    (index) => GestureDetector(
+                      onTap: () => selectCategory(index),
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 10, right: 10),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              Navtext[index],
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: selectedIndex == index
+                                    ? Colors.blueAccent
+                                    : Colors.black,
+                              ),
                             ),
-                          ),
-                          // **選択時のみ丸い下線を表示**
-                          AnimatedContainer(
-                            duration: Duration(milliseconds: 300), // アニメーション効果
-                            height: 8, // 丸のサイズ
-                            width: selectedIndex == index ? 8 : 0, // 選択時のみ表示
-                            decoration: BoxDecoration(
-                              color: Colors.blueAccent,
-                              shape: BoxShape.circle, // **円形に変更**
+                            // **選択時のみ丸い下線を表示**
+                            AnimatedContainer(
+                              duration:
+                                  Duration(milliseconds: 300), // アニメーション効果
+                              height: 8, // 丸のサイズ
+                              width: selectedIndex == index ? 8 : 0, // 選択時のみ表示
+                              decoration: BoxDecoration(
+                                color: Colors.blueAccent,
+                                shape: BoxShape.circle, // **円形に変更**
+                              ),
+                              margin: EdgeInsets.only(top: 4),
                             ),
-                            margin: EdgeInsets.only(top: 4),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
+              SizedBox(height: 15),
 
-            SizedBox(height: 15),
-
-            // **横スクロールのカード**
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              controller: _scrollController,
-              child: Row(
-                children: items
-                    .map(
-                        (item) => buildImageCard(item["image"]!, item["text"]!))
-                    .toList(),
+              // **横スクロールのカード**
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                controller: _scrollController,
+                child: Row(
+                  children: items
+                      .map((item) =>
+                          buildImageCard(item["image"]!, item["text"]!))
+                      .toList(),
+                ),
               ),
-            ),
-          ],
+              SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );
