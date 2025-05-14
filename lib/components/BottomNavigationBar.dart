@@ -13,6 +13,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
     return BottomNavigationBar(
       currentIndex: currentIndex,
       onTap: onTap,
+      selectedItemColor: Colors.blueAccent,
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: "ホーム"),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: "プロフィール"),
