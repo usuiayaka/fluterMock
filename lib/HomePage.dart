@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/components/BottomNavigationBar.dart';
+import 'package:flutter_application_1/RecommendedTeaPage.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -164,10 +165,11 @@ class _HomePageState extends State<HomePage> {
                 scrollDirection: Axis.horizontal,
                 controller: _scrollController,
                 child: Row(
-                  children: items
-                      .map((item) =>
-                          buildImageCard(item["image"]!, item["text"]!))
-                      .toList(),
+                  children: List.generate(
+                    items.length,
+                    (index) => buildImageCard(
+                        items[index]["image"]!, items[index]["text"]!, index),
+                  ),
                 ),
               ),
               SizedBox(height: 20),
@@ -178,38 +180,46 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget buildImageCard(String imagePath, String text) {
+  Widget buildImageCard(String imagePath, String text, int index) {
     return Padding(
       padding: EdgeInsets.only(right: 15),
-      child: Stack(
-        children: [
-          Container(
-            height: 350,
-            width: 250,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              image: DecorationImage(
-                  image: AssetImage(imagePath), fit: BoxFit.cover),
+      child: GestureDetector(
+        onTap: () {
+          if (index == 0) {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const RecommendedTeaPage()));
+          }
+        },
+        child: Stack(
+          children: [
+            Container(
+              height: 350,
+              width: 250,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                image: DecorationImage(
+                    image: AssetImage(imagePath), fit: BoxFit.cover),
+              ),
             ),
-          ),
-          Positioned(
-            left: 10,
-            bottom: 15,
-            child: Text(
-              text,
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  shadows: [
-                    Shadow(
-                        offset: Offset(2, 2),
-                        blurRadius: 5,
-                        color: Colors.black.withOpacity(0.5))
-                  ]),
+            Positioned(
+              left: 10,
+              bottom: 15,
+              child: Text(
+                text,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    shadows: [
+                      Shadow(
+                          offset: Offset(2, 2),
+                          blurRadius: 5,
+                          color: Colors.black.withOpacity(0.5))
+                    ]),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
