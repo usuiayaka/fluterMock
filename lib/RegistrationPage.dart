@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:image_picker/image_picker.dart';
 import '../services/api_service.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class Registrationpage extends StatefulWidget {
   const Registrationpage({super.key});
@@ -33,6 +35,30 @@ class _RegistrationpageState extends State<Registrationpage> {
       setState(() {
         _pickedXFile = pickedFile;
       });
+    }
+  }
+
+  Future<String?> uploadImageToFirebase(XFile imageFile) async {
+    try {
+      final fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      final storageRef =
+          FirebaseStorage.instance.ref().child('tea_image/$fileName.jpg');
+
+      //ファイルをアップロードする
+      if (kIsWeb) {
+        final bytes = await imageFile.readAsBytes();
+        await storageRef.putData(
+            bytes, SettableMetadata(contentType: 'image/jpeg'));
+      } else {
+        final file = File(imageFile.path);
+        await storageRef.putFile(file);
+      }
+      //ダウンロード
+      final downloadURL = await storageRef.getDownloadURL();
+      return downloadURL;
+    } catch (e) {
+      print('画像のアップロード失敗:$e');
+      return null;
     }
   }
 
@@ -206,27 +232,38 @@ class _RegistrationpageState extends State<Registrationpage> {
                     onPressed: () async {
                       if (_pickedXFile == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('画像を選択してください'),
-                          ),
+                          const SnackBar(content: Text('画像を選択してください')),
                         );
                         return;
                       }
+
                       if (_formKey.currentState!.validate()) {
+                        // Firebaseに画像アップロード
+                        final imageUrl =
+                            await uploadImageToFirebase(_pickedXFile!);
+                        if (imageUrl == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('画像アップロードに失敗しました')),
+                          );
+                          return;
+                        }
+
+                        // 他のデータ取得
                         final name = _nameController.text;
-                        final image = _pickedXFile!.path;
                         final description = _descriptionController.text;
                         final tasteType = _tasteTypeController.text;
                         final aroma = _aromaController.text;
                         final color = _colorController.text;
 
+                        // APIへ登録
                         final success = await ApiService.postTea(
-                            name: name,
-                            image: image,
-                            description: description,
-                            tasteType: tasteType,
-                            aroma: aroma,
-                            color: color);
+                          name: name,
+                          image: imageUrl, // ← URLを渡す！
+                          description: description,
+                          tasteType: tasteType,
+                          aroma: aroma,
+                          color: color,
+                        );
 
                         if (success) {
                           showDialog(
