@@ -270,7 +270,7 @@ class _RegistrationpageState extends State<Registrationpage> {
                             context: context,
                             builder: (_) => AlertDialog(
                               title: const Text('登録成功'),
-                              content: const Text('お茶の情報を登録しました。'),
+                              content: const Text('新しいハーブティーを登録しました。'),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(context),

@@ -3,17 +3,20 @@ const mysql = require("mysql2");
 const cors = require("cors");
 
 const app = express();
-app.use(cors());
 
-//mysqlの接続設定☆
+app.use(cors());
+app.use(express.json()); // ここでJSONのボディをパース
+
+require("dotenv").config();
+
+// MySQL接続設定
 const connection = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "Mysqlpass",
-  database: "tea",
+  host: process.env.HOST,
+  user: process.env.USER,
+  password: process.env.PASSWORD,
+  database: process.env.DATABASE,
 });
 
-//mysqlとはここで接続するぜ☆
 connection.connect((err) => {
   if (err) {
     console.log("接続エラー", err);
@@ -22,7 +25,7 @@ connection.connect((err) => {
   console.log("接続できた！");
 });
 
-//teaテーブルの中身をもらう
+// GET /api/teas
 app.get("/api/teas", (req, res) => {
   connection.query("SELECT * FROM tea", (err, results) => {
     if (err) {
@@ -33,7 +36,33 @@ app.get("/api/teas", (req, res) => {
   });
 });
 
-//サーバー立てるお
+// POST /api/teas
+app.post("/api/teas", (req, res) => {
+  const { name, image, description, tasteType, aroma, color } = req.body;
+
+  if (!name || !image || !description || !tasteType || !aroma || !color) {
+    return res.status(400).json({ message: "すべての項目を入力してください" });
+  }
+
+  const query = `INSERT INTO tea (name,image,description
+,tasteType,aroma,color)VALUES(?,?,?,?,?,?)`;
+
+  const values = [name, image, description, tasteType, aroma, color];
+
+  connection.query(query, values, (err, result) => {
+    if (err) {
+      console.error("DBエラー", err);
+      return res.status(500).json({
+        message: "DB登録に失敗しました。",
+      });
+    }
+    res.status(201).json({
+      message: "登録完了",
+      id: result.insertId,
+    });
+  });
+});
+
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`サーバー立ってるよー ${PORT}`);
