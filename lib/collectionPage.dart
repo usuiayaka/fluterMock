@@ -4,16 +4,18 @@ import 'package:flutter/material.dart';
 import '../models/tea.dart';
 import '../services/api_service.dart';
 import 'package:flutter_application_1/components/BottomNavigationBar.dart';
+import 'package:flutter_application_1/Profile.dart';
 import 'package:flutter_application_1/RegistrationPage.dart';
+import 'package:flutter_application_1/HomePage.dart';
 
-class RecommendedTeaPage extends StatefulWidget {
-  const RecommendedTeaPage({super.key});
+class CollectionPage extends StatefulWidget {
+  const CollectionPage({super.key});
 
   @override
-  State<RecommendedTeaPage> createState() => _RecommendedTeaPageState();
+  State<CollectionPage> createState() => _CollectionPageState();
 }
 
-class _RecommendedTeaPageState extends State<RecommendedTeaPage> {
+class _CollectionPageState extends State<CollectionPage> {
   late Future<List<Tea>> _futureTeas;
 
   @override
@@ -40,7 +42,7 @@ class _RecommendedTeaPageState extends State<RecommendedTeaPage> {
               actions: [
                 TextButton(
                     onPressed: () {
-                      //登録用ページへ
+                      // 登録用ページへ
                       Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -61,7 +63,7 @@ class _RecommendedTeaPageState extends State<RecommendedTeaPage> {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return SliverToBoxAdapter(
-                  child: Center(child: Text('エラーが発生しました。')),
+                  child: Center(child: CircularProgressIndicator()),
                 );
               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                 return SliverToBoxAdapter(
@@ -90,9 +92,15 @@ class _RecommendedTeaPageState extends State<RecommendedTeaPage> {
         currentIndex: 0,
         onTap: (index) {
           if (index == 0) {
-            // すでにホーム
+            Navigator.push(
+                context, MaterialPageRoute(builder: (_) => HomePage()));
           } else if (index == 1) {
-            Navigator.pushNamed(context, '/profile'); // 例: プロフィールページに遷移
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => const ProfilePage(
+                        nickname: "Atyaneru",
+                        profileImageUrl: "assets/images/hokori.jpg")));
           }
         },
       ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/components/BottomNavigationBar.dart';
-import 'package:flutter_application_1/RecommendedTeaPage.dart';
+import 'package:flutter_application_1/collectionPage.dart';
+import 'package:flutter_application_1/Profile.dart';
+import 'package:flutter_application_1/RecommendTeaPage.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -56,7 +58,21 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       body: buildHomePageContent(),
       bottomNavigationBar: CustomBottomNavigationBar(
-          currentIndex: currentPageIndex, onTap: onBottomNavTapped),
+        currentIndex: 0,
+        onTap: (index) {
+          if (index == 0) {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (_) => HomePage()));
+          } else if (index == 1) {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => const ProfilePage(
+                        nickname: "Atyaneru",
+                        profileImageUrl: "assets/images/hokori.jpg")));
+          }
+        },
+      ),
     );
   }
 
@@ -187,7 +203,15 @@ class _HomePageState extends State<HomePage> {
         onTap: () {
           if (index == 0) {
             Navigator.push(context,
-                MaterialPageRoute(builder: (_) => const RecommendedTeaPage()));
+                MaterialPageRoute(builder: (_) => const CollectionPage()));
+          }
+          if (index == 1) {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (_) => RecommendTeaPage()));
+          }
+          if (index == 2) {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (_) => RecommendTeaPage()));
           }
         },
         child: Stack(

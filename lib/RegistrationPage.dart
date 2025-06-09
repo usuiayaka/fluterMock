@@ -7,6 +7,9 @@ import 'package:image_picker/image_picker.dart';
 import '../services/api_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_application_1/components/BottomNavigationBar.dart';
+import 'package:flutter_application_1/Profile.dart';
+import 'package:flutter_application_1/HomePage.dart';
 
 class Registrationpage extends StatefulWidget {
   const Registrationpage({super.key});
@@ -293,6 +296,22 @@ class _RegistrationpageState extends State<Registrationpage> {
             ),
           ),
         ),
+      ),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        currentIndex: 0,
+        onTap: (index) {
+          if (index == 0) {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (_) => HomePage()));
+          } else if (index == 1) {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => const ProfilePage(
+                        nickname: "Atyaneru",
+                        profileImageUrl: "assets/images/hokori.jpg")));
+          }
+        },
       ),
     );
   }
