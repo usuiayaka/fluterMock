@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'package:flutter_application_1/HomePage.dart';
+import 'package:flutter_application_1/login.dart';
 
 class Welcome extends StatefulWidget {
   @override
@@ -55,7 +55,7 @@ class _WelcomeState extends State<Welcome> {
                 _controller.pause(); // 遷移前に動画を停止
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => HomePage()),
+                  MaterialPageRoute(builder: (context) => LoginPage()),
                 );
               },
             ),

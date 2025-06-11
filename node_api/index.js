@@ -63,6 +63,43 @@ app.post("/api/teas", (req, res) => {
   });
 });
 
+app.post("/api/login", (req, res) => {
+  const { name, password } = req.body;
+
+  if (!name || !password) {
+    return res
+      .status(400)
+      .json({ message: "ニックネームとパスワードは必須です" });
+  }
+
+  const query = "SELECT * FROM users WHERE name = ?";
+  connection.query(query, [name], (err, results) => {
+    if (err) {
+      console.error("DBエラー", err);
+      return res.status(500).json({ message: "サーバーエラー" });
+    }
+
+    if (results.length === 0) {
+      return res.status(401).json({ message: "ユーザーが存在しません" });
+    }
+
+    const user = results[0];
+
+    if (user.pass === password) {
+      // ログイン成功
+      res.status(200).json({
+        message: "ログイン成功",
+        userId: user.id,
+        name: user.name,
+        pass: user.pass,
+        img: user.img,
+      });
+    } else {
+      res.status(401).json({ message: "パスワードが違います" });
+    }
+  });
+});
+
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`サーバー立ってるよー ${PORT}`);

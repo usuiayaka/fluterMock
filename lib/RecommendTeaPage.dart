@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/components/BottomNavigationBar.dart';
 import 'package:flutter_application_1/HomePage.dart';
-import 'package:flutter_application_1/Profile.dart'; // これも必要
+import 'package:flutter_application_1/Profile.dart';
 
 class RecommendTeaPage extends StatelessWidget {
   @override
@@ -29,15 +29,9 @@ class RecommendTeaPage extends StatelessWidget {
               MaterialPageRoute(builder: (_) => HomePage()),
             );
           } else if (index == 1) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => const ProfilePage(
-                  nickname: "Atyaneru",
-                  profileImageUrl: "assets/images/hokori.jpg",
-                ),
-              ),
-            );
+            // もう一度ProfilePageを開くときもUserから読み込みます
+            Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const ProfilePage()));
           }
         },
       ),

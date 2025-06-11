@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/tea.dart';
+import '../models/user.dart';
 
 class ApiService {
   static const String baseUrl = 'http://localhost:3000/api';
@@ -43,5 +44,31 @@ class ApiService {
     print('Response Body:${response.body}');
 
     return response.statusCode == 201;
+  }
+
+  // ログイン検証（POST）
+  static Future<bool> postUser({
+    required String name,
+    required String pass,
+  }) async {
+    final url = Uri.parse('$baseUrl/login');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'name': name,
+        'password': pass,
+      }),
+    );
+    print('Status Code: ${response.statusCode}');
+    print('Response Body:${response.body}');
+
+    if (response.statusCode == 200) {
+      final decoded = jsonDecode(response.body);
+      User.setUserInfo(decoded['name'], decoded['img'] ?? '');
+      return true;
+    } else {
+      return false;
+    }
   }
 }

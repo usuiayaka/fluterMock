@@ -100,12 +100,9 @@ class _CollectionPageState extends State<CollectionPage> {
             Navigator.push(
                 context, MaterialPageRoute(builder: (_) => HomePage()));
           } else if (index == 1) {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => const ProfilePage(
-                        nickname: "Atyaneru",
-                        profileImageUrl: "assets/images/hokori.jpg")));
+            // もう一度ProfilePageを開くときもUserから読み込みます
+            Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const ProfilePage()));
           }
         },
       ),
