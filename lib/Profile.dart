@@ -13,39 +13,73 @@ class ProfilePage extends StatelessWidget {
         User.img ?? 'https://example.com/default_profile.png';
 
     return Scaffold(
+      backgroundColor: Colors.blueGrey[50],
       appBar: AppBar(
-        title: Text('プロフィール'),
+        title: const Text('プロフィール'),
         centerTitle: true,
+        backgroundColor: Colors.blueAccent,
+        foregroundColor: Colors.white,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircleAvatar(
-              radius: 60,
-              backgroundImage: AssetImage(profileImageUrl),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 64),
+        child: Center(
+          child: Container(
+            padding: const EdgeInsets.all(32),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 12,
+                  offset: Offset(0, 6),
+                ),
+              ],
             ),
-            const SizedBox(height: 20),
-            Text(
-              nickname,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircleAvatar(
+                  radius: 60,
+                  backgroundImage: NetworkImage(profileImageUrl),
+                  backgroundColor: Colors.grey[200],
+                ),
+                const SizedBox(height: 32),
+                Text(
+                  nickname,
+                  style: const TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  'ようこそ！\nあなたのプロフィールページです。',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.black54,
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
       bottomNavigationBar: CustomBottomNavigationBar(
         currentIndex: 1,
         onTap: (index) {
           if (index == 0) {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (_) => HomePage()));
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => HomePage()),
+            );
           } else if (index == 1) {
-            // もう一度ProfilePageを開くときもUserから読み込みます
-            Navigator.push(context,
-                MaterialPageRoute(builder: (_) => const ProfilePage()));
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const ProfilePage()),
+            );
           }
         },
       ),

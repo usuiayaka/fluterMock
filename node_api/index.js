@@ -100,6 +100,36 @@ app.post("/api/login", (req, res) => {
   });
 });
 
+// PUT /api/teas/:id ← 更新処理を追加する
+app.put("/api/teas/:id", (req, res) => {
+  const teaId = req.params.id;
+  const { name, image, description, tasteType, aroma, color } = req.body;
+
+  if (!name || !image || !description || !tasteType || !aroma || !color) {
+    return res.status(400).json({ message: "全ての項目が必要です" });
+  }
+
+  const query = `
+    UPDATE tea 
+    SET name = ?, image = ?, description = ?, tasteType = ?, aroma = ?, color = ?
+    WHERE id = ?
+  `;
+  const values = [name, image, description, tasteType, aroma, color, teaId];
+
+  connection.query(query, values, (err, result) => {
+    if (err) {
+      console.error("DBエラー", err);
+      return res.status(500).json({ message: "更新に失敗しました" });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "データが存在しません" });
+    }
+
+    res.status(200).json({ message: "更新成功" });
+  });
+});
+
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`サーバー立ってるよー ${PORT}`);

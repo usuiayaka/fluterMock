@@ -71,4 +71,25 @@ class ApiService {
       return false;
     }
   }
+
+  static Future<bool> updateTea(Tea tea) async {
+    final url = Uri.parse('$baseUrl/teas/${tea.id}');
+    final response = await http.put(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'name': tea.name,
+        'image': tea.image,
+        'description': tea.description,
+        'tasteType': tea.tasteType,
+        'aroma': tea.aroma,
+        'color': tea.color,
+      }),
+    );
+
+    print('Status Code: ${response.statusCode}');
+    print('Response Body: ${response.body}');
+
+    return response.statusCode == 200;
+  }
 }

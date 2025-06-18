@@ -3,6 +3,7 @@ import 'package:flutter_application_1/components/BottomNavigationBar.dart';
 import 'package:flutter_application_1/collectionPage.dart';
 import 'package:flutter_application_1/Profile.dart';
 import 'package:flutter_application_1/RecommendTeaPage.dart';
+import 'package:flutter_application_1/BrowsebyWorries.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -207,8 +208,8 @@ class _HomePageState extends State<HomePage> {
                 context, MaterialPageRoute(builder: (_) => RecommendTeaPage()));
           }
           if (index == 2) {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (_) => RecommendTeaPage()));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (_) => BrowseByWorriesPage()));
           }
         },
         child: Stack(

@@ -12,6 +12,7 @@ class _LoginPageState extends State<LoginPage> {
   final _passController = TextEditingController();
 
   bool _isLoading = false;
+  bool _obscureText = true;
   String? _errorMessage;
 
   void _login() async {
@@ -34,7 +35,6 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final success = await ApiService.postUser(name: name, pass: pass);
       if (success) {
-        // ログイン成功。必要ならホーム画面などへ遷移
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('ログイン成功！')),
         );
@@ -68,36 +68,122 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('ログイン')),
-      body: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          children: [
-            TextField(
-              controller: _nameController,
-              decoration: InputDecoration(labelText: '名前'),
-            ),
-            SizedBox(height: 16),
-            TextField(
-              controller: _passController,
-              decoration: InputDecoration(labelText: 'パスワード'),
-              obscureText: true,
-            ),
-            SizedBox(height: 24),
-            _isLoading
-                ? CircularProgressIndicator()
-                : ElevatedButton(
-                    onPressed: _login,
-                    child: Text('ログイン'),
-                  ),
-            if (_errorMessage != null) ...[
-              SizedBox(height: 16),
+      // 薄い背景色でやわらかい印象
+      backgroundColor: Colors.blueGrey[50],
+      body: Center(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // タイトル
               Text(
-                _errorMessage!,
-                style: TextStyle(color: Colors.red),
+                "Welcome Back!",
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
               ),
-            ]
-          ],
+              SizedBox(height: 10),
+              Text(
+                "ログインして、あなたにぴったりのハーブティーを探そう！",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey[700],
+                ),
+              ),
+              SizedBox(height: 40),
+
+              // 入力フォーム
+              Container(
+                padding: EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 12,
+                      offset: Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: _nameController,
+                      decoration: InputDecoration(
+                        labelText: '名前',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    TextField(
+                      controller: _passController,
+                      obscureText: _obscureText,
+                      decoration: InputDecoration(
+                        labelText: 'パスワード',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscureText
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: Colors.grey,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscureText = !_obscureText;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 30),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _isLoading ? null : _login,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blueAccent,
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 4,
+                        ),
+                        child: _isLoading
+                            ? CircularProgressIndicator(
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                              )
+                            : Text(
+                                'ログイン',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                ),
+                              ),
+                      ),
+                    ),
+                    if (_errorMessage != null) ...[
+                      SizedBox(height: 20),
+                      Text(
+                        _errorMessage!,
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ]
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

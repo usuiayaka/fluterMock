@@ -23,6 +23,12 @@ class _CollectionPageState extends State<CollectionPage> {
     _futureTeas = ApiService.fetchTeas();
   }
 
+  void refreshTeas() {
+    setState(() {
+      _futureTeas = ApiService.fetchTeas();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,7 +38,7 @@ class _CollectionPageState extends State<CollectionPage> {
             centerTitle: true,
             floating: true,
             title: const Text(
-              "Your Collections",
+              "Atyanaruのコレクション",
               style: TextStyle(
                   color: Colors.black,
                   fontSize: 18,
@@ -42,10 +48,11 @@ class _CollectionPageState extends State<CollectionPage> {
               TextButton(
                   onPressed: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const Registrationpage(),
-                        ));
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const Registrationpage(),
+                      ),
+                    ).then((_) => refreshTeas());
                   },
                   child: const Text(
                     '登録する',
@@ -83,7 +90,7 @@ class _CollectionPageState extends State<CollectionPage> {
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
                       final tea = teas[index];
-                      return TeaGridTile(tea: tea);
+                      return TeaGridTile(tea: tea, onUpdated: refreshTeas);
                     },
                     childCount: teas.length,
                   ),
@@ -100,7 +107,6 @@ class _CollectionPageState extends State<CollectionPage> {
             Navigator.push(
                 context, MaterialPageRoute(builder: (_) => HomePage()));
           } else if (index == 1) {
-            // もう一度ProfilePageを開くときもUserから読み込みます
             Navigator.push(context,
                 MaterialPageRoute(builder: (_) => const ProfilePage()));
           }
@@ -111,22 +117,23 @@ class _CollectionPageState extends State<CollectionPage> {
 }
 
 class TeaGridTile extends StatelessWidget {
-  const TeaGridTile({super.key, required this.tea});
+  const TeaGridTile({super.key, required this.tea, required this.onUpdated});
 
   final Tea tea;
+  final VoidCallback onUpdated;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => _showDetails(context),
       child: Hero(
-        tag: tea.image, // Heroアニメーション（画像がふわっと飛ぶ）
+        tag: tea.image,
         child: Material(
           color: Colors.transparent,
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20), // 強め丸角
-              boxShadow: [
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: const [
                 BoxShadow(
                   color: Colors.black26,
                   blurRadius: 6,
@@ -185,105 +192,163 @@ class TeaGridTile extends StatelessWidget {
   }
 
   void _showDetails(BuildContext context) {
-    showGeneralDialog(
+    final nameController = TextEditingController(text: tea.name);
+    final descController = TextEditingController(text: tea.description);
+    final aromaController = TextEditingController(text: tea.aroma);
+    final tasteController = TextEditingController(text: tea.tasteType);
+    final colorController = TextEditingController(text: tea.color);
+    final imageController = TextEditingController(text: tea.image);
+
+    bool isEditing = false;
+
+    showDialog(
       context: context,
-      barrierLabel: "tea_detail",
-      barrierDismissible: true,
-      barrierColor: Colors.black.withOpacity(0.5),
-      transitionDuration: const Duration(milliseconds: 300),
-      pageBuilder: (_, __, ___) => Container(),
-      transitionBuilder: (ctx, anim1, anim2, child) {
-        return Opacity(
-          opacity: anim1.value,
-          child: Transform.scale(
-            scale: Curves.easeOutBack.transform(anim1.value),
-            child: Dialog(
-              backgroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Stack(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Hero(
-                            tag: tea.image,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.network(
-                                tea.image,
-                                width: double.infinity,
-                                height: 180,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) =>
-                                    const Icon(Icons.image, size: 50),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            tea.name,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 8),
-                          const Divider(),
-                          const SizedBox(height: 8),
-                          Text(
-                            tea.description,
-                            style: Theme.of(context).textTheme.bodyMedium,
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 12),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            alignment: WrapAlignment.center,
-                            children: [
-                              _buildInfoChip('味タイプ', tea.tasteType),
-                              _buildInfoChip('香り', tea.aroma),
-                              _buildInfoChip('色', tea.color),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: IconButton(
-                      icon: Icon(Icons.close, color: Colors.grey[700]),
-                      onPressed: () => Navigator.of(context).pop(),
-                    ),
-                  ),
-                ],
-              ),
+      builder: (_) {
+        return StatefulBuilder(builder: (context, setState) {
+          return Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
             ),
-          ),
-        );
+            child: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.network(
+                            imageController.text,
+                            width: double.infinity,
+                            height: 180,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        isEditing
+                            ? TextField(
+                                controller: nameController,
+                                decoration:
+                                    const InputDecoration(labelText: "名前"),
+                              )
+                            : Text(
+                                tea.name,
+                                style: const TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                        const SizedBox(height: 8),
+                        const Divider(),
+                        const SizedBox(height: 8),
+                        isEditing
+                            ? TextField(
+                                controller: descController,
+                                maxLines: null,
+                                decoration:
+                                    const InputDecoration(labelText: "説明"),
+                              )
+                            : Text(
+                                tea.description,
+                                textAlign: TextAlign.center,
+                              ),
+                        const SizedBox(height: 12),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: isEditing
+                              ? [
+                                  _editChipField("味タイプ", tasteController),
+                                  _editChipField("香り", aromaController),
+                                  _editChipField("色", colorController),
+                                  _editChipField("画像URL", imageController),
+                                ]
+                              : [
+                                  _buildInfoChip("味タイプ", tea.tasteType),
+                                  _buildInfoChip("香り", tea.aroma),
+                                  _buildInfoChip("色", tea.color),
+                                ],
+                        ),
+                        const SizedBox(height: 16),
+                        if (isEditing)
+                          ElevatedButton(
+                            onPressed: () async {
+                              final updatedTea = Tea(
+                                id: tea.id,
+                                name: nameController.text,
+                                image: imageController.text,
+                                description: descController.text,
+                                tasteType: tasteController.text,
+                                aroma: aromaController.text,
+                                color: colorController.text,
+                              );
+
+                              final success =
+                                  await ApiService.updateTea(updatedTea);
+                              if (context.mounted) {
+                                Navigator.pop(context);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content:
+                                        Text(success ? "更新しました" : "更新に失敗しました"),
+                                  ),
+                                );
+                                onUpdated(); // データ再取得
+                              }
+                            },
+                            child: const Text("保存"),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(isEditing ? Icons.close : Icons.edit,
+                            color: Colors.grey[800]),
+                        onPressed: () {
+                          setState(() {
+                            isEditing = !isEditing;
+                          });
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        });
       },
     );
   }
 
   Widget _buildInfoChip(String label, String value) {
     return Chip(
-      label: Text(
-        '$label: $value',
-        style: const TextStyle(fontSize: 12),
-      ),
+      label: Text('$label: $value', style: const TextStyle(fontSize: 12)),
       backgroundColor: Colors.grey[200],
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
+      ),
+    );
+  }
+
+  Widget _editChipField(String label, TextEditingController controller) {
+    return SizedBox(
+      width: 130,
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(labelText: label),
+        style: const TextStyle(fontSize: 12),
       ),
     );
   }
